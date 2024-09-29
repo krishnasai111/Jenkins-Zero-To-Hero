@@ -1,15 +1,13 @@
 pipeline {
   agent {
     docker {
-      image 'abhishekf5/maven-abhishek-docker-agent:v1'
-      args '--user root -v /var/run/docker.sock:/var/run/docker.sock' // mount Docker socket to access the host's Docker daemon
+      image 'docker:latest' // Use the Docker image that supports Docker commands
+      args '--privileged' // Grant the container permission to run Docker commands
     }
   }
   stages {
     stage('Checkout') {
       steps {
-        // Uncomment to enable repository checkout
-        // git branch: 'main', url: 'https://github.com/krishnasai111/Jenkins-Zero-To-Hero.git'
         sh 'echo "Checkout stage passed"'
       }
     }
@@ -31,7 +29,7 @@ pipeline {
     }
     stage('Build and Push Docker Image') {
       environment {
-        DOCKER_IMAGE = "440588537421.dkr.ecr.us-west-1.amazonaws.com/ultimate-cicd:${BUILD_NUMBER}" // Update with your ECR repository URI
+        DOCKER_IMAGE = "440588537421.dkr.ecr.us-west-1.amazonaws.com/ultimate-cicd:${BUILD_NUMBER}"
       }
       steps {
         script {
