@@ -34,7 +34,7 @@ pipeline {
             }
         }
     }
-    stage{
+    stage('check AWS Version'){
         steps{
             script{
                 sh 'aws --version'
