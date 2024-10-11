@@ -34,7 +34,7 @@ pipeline {
             }
         }
     }
-    stage('Install Unzip') {
+      stage('Install Unzip') {
             steps {
                 script {
                     // Install unzip if it's not available
@@ -47,6 +47,7 @@ pipeline {
                     '''
                 }
             }
+  }
     stage('AWS Installation'){
         steps{
             script{
