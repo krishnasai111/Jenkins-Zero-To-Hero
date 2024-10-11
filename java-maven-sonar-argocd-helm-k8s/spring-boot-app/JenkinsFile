@@ -34,13 +34,7 @@ pipeline {
             }
         }
     }
-    stage('ENV Path'){
-        steps{
-            script{
-                sh 'sh 'echo $PATH''
-            }
-        }
-    }
+    
     stage('AWS Installation'){
         steps{
             script{
