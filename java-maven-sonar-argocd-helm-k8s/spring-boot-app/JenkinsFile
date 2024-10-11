@@ -27,6 +27,13 @@ pipeline {
         }
       }
     }
+    stage('check Docker installation'){
+        steps{
+            script{
+                sh 'docker --version'
+            }
+        }
+    }
     stage('Build and Push Docker Image') {
       environment {
         DOCKER_IMAGE = "440588537421.dkr.ecr.us-east-1.amazonaws.com/cicd:${BUILD_NUMBER}"
