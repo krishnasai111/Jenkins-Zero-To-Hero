@@ -34,6 +34,13 @@ pipeline {
             }
         }
     }
+    stage('ENV Path'){
+        steps{
+            script{
+                sh 'sh 'echo $PATH''
+            }
+        }
+    }
     stage('check AWS Version'){
         steps{
             script{
