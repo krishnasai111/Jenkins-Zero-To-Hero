@@ -19,7 +19,7 @@ pipeline {
     }
     stage('Static Code Analysis') {
       environment {
-        SONAR_URL = "http://13.52.254.49:9000/"
+        SONAR_URL = "http://54.165.28.77:9000/"
       }
       steps {
         withCredentials([string(credentialsId: 'sonarqube', variable: 'SONAR_AUTH_TOKEN')]) {
@@ -29,13 +29,13 @@ pipeline {
     }
     stage('Build and Push Docker Image') {
       environment {
-        DOCKER_IMAGE = "440588537421.dkr.ecr.us-west-1.amazonaws.com/ultimate-cicd:${BUILD_NUMBER}"
+        DOCKER_IMAGE = "440588537421.dkr.ecr.us-east-1.amazonaws.com/cicd:${BUILD_NUMBER}"
       }
       steps {
         script {
             // Log in to AWS ECR
             withCredentials([[$class: 'AmazonWebServicesCredentials', credentialsId: 'aws-ecr-cred']]) {
-                sh 'aws ecr get-login-password --region us-west-1 | docker login --username AWS --password-stdin 440588537421.dkr.ecr.us-west-1.amazonaws.com'
+                sh 'aws ecr get-login-password --region us-west-1 | docker login --username AWS --password-stdin 440588537421.dkr.ecr.us-east-1.amazonaws.com'
             }
             
             // Build the Docker image
