@@ -127,7 +127,7 @@ pipeline {
             steps {
                 script {
                     // Trigger Argo CD to sync the application
-                    sh 'kubectl apply -f argo-applications/spring-boot-app.yaml'  // Path to your Argo CD Application manifest
+                    sh 'kubectl apply -f java-maven-sonar-argocd-helm-k8s/spring-boot-app/argo-applications/spring-boot-app.yaml'  // Path to your Argo CD Application manifest
                     sh 'argocd app sync spring-boot-app' // Sync Argo CD application
                 }
             }
