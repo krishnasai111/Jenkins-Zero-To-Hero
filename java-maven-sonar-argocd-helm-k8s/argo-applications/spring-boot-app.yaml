@@ -8,7 +8,7 @@ spec:
   source:
     repoURL: 'https://github.com/krishnasai111/Jenkins-Zero-To-Hero'
     targetRevision: HEAD
-    path: 'spring-boot-app-manifests'
+    path: 'spring-boot-app-manifestss'
     helm:
       valueFiles:
         - values.yaml
