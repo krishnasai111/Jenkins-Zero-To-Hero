@@ -6,7 +6,7 @@ metadata:
 spec:
   project: default
   source:
-    repoURL: 'https://github.com/krishnasai111/Jenkins-Zero-To-Hero'
+    repoURL: 'https://github.com/krishnasai111/Jenkins-Zero-To-Hero/blob/main/java-maven-sonar-argocd-helm-k8s'
     targetRevision: HEAD
     path: 'spring-boot-app-manifestss'
     helm:
