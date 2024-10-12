@@ -144,10 +144,24 @@ pipeline {
                 script {
                     withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', credentialsId: 'aws-ecr-cred', accessKeyVariable: 'AWS_ACCESS_KEY_ID', secretKeyVariable: 'AWS_SECRET_ACCESS_KEY']]){
                     // Trigger Argo CD to sync the application
-                    sh 'kubectl apply -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml'
-                    sh 'kubectl create namespace argocd'
-                    sh 'kubectl apply -f java-maven-sonar-argocd-helm-k8s/argo-applications/spring-boot-app.yaml'  // Path to your Argo CD Application manifest
-                    sh 'argocd app sync spring-boot-app' // Sync Argo CD application
+                   sh '''
+                     # Install Argo CD
+                    kubectl apply -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml
+
+    # Create namespace for Argo CD
+                    kubectl create namespace argocd
+
+    # Apply your Argo CD application manifest
+                    kubectl apply -f java-maven-sonar-argocd-helm-k8s/argo-applications/spring-boot-app.yaml
+
+    # Download and install Argo CD CLI
+                    curl -sSL https://github.com/argoproj/argo-cd/releases/latest/download/argocd-linux-amd64 -o argocd
+                    chmod +x argocd
+                    sudo mv argocd /usr/local/bin/
+
+    # Sync Argo CD application
+                    argocd app sync spring-boot-app
+                    '''
                 }
                 }
             }
