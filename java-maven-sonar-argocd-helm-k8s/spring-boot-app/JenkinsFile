@@ -52,7 +52,7 @@ pipeline {
           // Configure AWS CLI to access the EKS cluster
                         withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', credentialsId: 'aws-ecr-cred']]) {
                         sh 'aws eks --region us-east-1 update-kubeconfig --name cicd'
-                        sh 'kubectl apply -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml'
+                        
           }
         }
       }
@@ -134,6 +134,7 @@ pipeline {
             chmod +x kubectl
             mv kubectl /usr/local/bin/kubectl
             kubectl version --client
+            kubectl apply -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml
           '''
         }
       }
