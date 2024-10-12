@@ -100,7 +100,7 @@ pipeline {
           sh """
           git config --global user.email "krishnasai.majji111@gmail.com"
           git config --global user.name "krishnasai111"
-          git add helm-chart/spring-boot-app-manifestss/values.yaml
+          git add spring-boot-app-manifestss/values.yaml
           git commit -m "Update Helm chart with image tag ${BUILD_NUMBER}"
           git push origin master
           """
