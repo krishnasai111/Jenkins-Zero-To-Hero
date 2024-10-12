@@ -17,12 +17,28 @@ pipeline {
                 sh 'cd java-maven-sonar-argocd-helm-k8s/spring-boot-app && mvn clean package'
             }
         }
+        stage('AWS CLI Installation') {
+            steps {
+                script {
+                    sh 'curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"'
+                    sh 'unzip -o awscliv2.zip'
+                    sh './aws/install'
+                }
+            }
+        }
+        stage('Check AWS CLI Version') {
+            steps {
+                script {
+                    sh 'aws --version'
+                }
+            }
+        }
         stage('Configure EKS Kubeconfig') {
-      steps {
-        script {
+            steps {
+                script {
           // Configure AWS CLI to access the EKS cluster
-          withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', credentialsId: 'aws-ecr-cred']]) {
-            sh 'aws eks --region us-east-1 update-kubeconfig --name cicd'
+                        withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', credentialsId: 'aws-ecr-cred']]) {
+                        sh 'aws eks --region us-east-1 update-kubeconfig --name cicd'
           }
         }
       }
@@ -57,22 +73,8 @@ pipeline {
                 }
             }
         }
-        stage('AWS CLI Installation') {
-            steps {
-                script {
-                    sh 'curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"'
-                    sh 'unzip -o awscliv2.zip'
-                    sh './aws/install'
-                }
-            }
-        }
-        stage('Check AWS CLI Version') {
-            steps {
-                script {
-                    sh 'aws --version'
-                }
-            }
-        }
+
+
         stage('Build and Push Docker Image') {
             environment {
                 DOCKER_IMAGE = "440588537421.dkr.ecr.us-east-1.amazonaws.com/cicd:${BUILD_NUMBER}"
@@ -81,6 +83,7 @@ pipeline {
                 script {
                     // Log in to AWS ECR
                     withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', credentialsId: 'aws-ecr-cred', accessKeyVariable: 'AWS_ACCESS_KEY_ID', secretKeyVariable: 'AWS_SECRET_ACCESS_KEY']]) {
+                        sh 'aws eks --region us-east-1 update-kubeconfig --name cicd'
                         sh 'aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 440588537421.dkr.ecr.us-east-1.amazonaws.com'
                     }
 
