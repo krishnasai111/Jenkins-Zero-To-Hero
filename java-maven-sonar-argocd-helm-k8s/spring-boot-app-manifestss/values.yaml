@@ -1,6 +1,6 @@
 image:
   repository: 440588537421.dkr.ecr.us-east-1.amazonaws.com/cicd
-  tag: 55
+  tag: 56
 
 env:
   profile: "prod"
