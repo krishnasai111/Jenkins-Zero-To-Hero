@@ -1,172 +1,53 @@
 pipeline {
-  agent {
-    docker {
-     image 'abhishekf5/maven-abhishek-docker-agent:v1'
-      args '--user root -v /var/run/docker.sock:/var/run/docker.sock' // mount Docker socket to access the host's Docker daemon
+    agent {
+        docker {
+            image 'abhishekf5/maven-abhishek-docker-agent:v1'
+            args '--user root -v /var/run/docker.sock:/var/run/docker.sock' // mount Docker socket to access the host's Docker daemon
+        }
     }
-  }
-  stages {
-    stage('Checkout') {
-      steps {
-        sh 'echo "Checkout stage passed"'
-      }
-    }
-    stage('Build and Test') {
-      steps {
-        sh 'ls -ltr'
-        sh 'cd java-maven-sonar-argocd-helm-k8s/spring-boot-app && mvn clean package'
-      }
-    }
-    stage('Static Code Analysis') {
-      environment {
-        SONAR_URL = "http://44.204.41.35:9000/"
-      }
-      steps {
-        withCredentials([string(credentialsId: 'sonarqube', variable: 'SONAR_AUTH_TOKEN')]) {
-          sh 'cd java-maven-sonar-argocd-helm-k8s/spring-boot-app && mvn sonar:sonar -Dsonar.login=$SONAR_AUTH_TOKEN -Dsonar.host.url=${SONAR_URL}'
-        }
-      }
-    }
-    stage('Check Docker installation') {
-      steps {
-        script {
-          sh 'docker --version'
-        }
-      }
-    stage('Check Docker installation') {
-      steps {
-        script {
-          sh 'docker --version'
-        }
-      }
-    }
-    stage('Install Unzip') {
-      steps {
-        script {
-          sh '''
-            if ! [ -x "$(command -v unzip)" ]; then
-              echo "Installing unzip..."
-              apt-get update
-              apt-get install -y unzip
-            fi
-          '''
-        }
-      }
-    }
-    stage('AWS CLI Installation') {
-      steps {
-        script {
-          sh 'curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"'
-          sh '/usr/bin/unzip -o awscliv2.zip'
-          sh './aws/install'
-        }
-      }
-    stage('Install Unzip') {
-      steps {
-        script {
-          sh '''
-            if ! [ -x "$(command -v unzip)" ]; then
-              echo "Installing unzip..."
-              apt-get update
-              apt-get install -y unzip
-            fi
-          '''
-        }
-      }
-    }
-    stage('AWS CLI Installation') {
-      steps {
-        script {
-          sh 'curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"'
-          sh '/usr/bin/unzip -o awscliv2.zip'
-          sh './aws/install'
-        }
-      }
-    }
-    stage('Check AWS CLI Version') {
-      steps {
-        script {
-          sh 'aws --version'
-        }
-      }
-    stage('Check AWS CLI Version') {
-      steps {
-        script {
-          sh 'aws --version'
-        }
-      }
-    }
-    stage('Build and Push Docker Image') {
-      environment {
-        DOCKER_IMAGE = "440588537421.dkr.ecr.us-east-1.amazonaws.com/cicd:${BUILD_NUMBER}"
-      }
-      steps {
-        script {
-          // Log in to AWS ECR
-          withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', credentialsId: 'aws-ecr-cred', accessKeyVariable: 'AWS_ACCESS_KEY_ID', secretKeyVariable: 'AWS_SECRET_ACCESS_KEY']]) {
-            sh 'aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 440588537421.dkr.ecr.us-east-1.amazonaws.com'
-          }
-
-          // Build the Docker image
-          sh "cd java-maven-sonar-argocd-helm-k8s/spring-boot-app && docker build -t ${DOCKER_IMAGE} ."
-
-          // Push the Docker image to ECR
-          sh "docker push ${DOCKER_IMAGE}"
-          // Log in to AWS ECR
-          withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', credentialsId: 'aws-ecr-cred', accessKeyVariable: 'AWS_ACCESS_KEY_ID', secretKeyVariable: 'AWS_SECRET_ACCESS_KEY']]) {
-            sh 'aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 440588537421.dkr.ecr.us-east-1.amazonaws.com'
-          }
-
-          // Build the Docker image
-          sh "cd java-maven-sonar-argocd-helm-k8s/spring-boot-app && docker build -t ${DOCKER_IMAGE} ."
-
-          // Push the Docker image to ECR
-          sh "docker push ${DOCKER_IMAGE}"
-        }
-      }
-    }
-    stage('Prepare Helm Values') {
-      steps {
-        script {
-          // Update Helm chart values with the new Docker image tag
-          sh """
-          sed -i 's|repository:.*|repository: 440588537421.dkr.ecr.us-east-1.amazonaws.com/cicd|' java-maven-sonar-argocd-helm-k8s/spring-boot-app-manifestss/values.yaml
-          sed -i 's|tag:.*|tag: ${BUILD_NUMBER}|' java-maven-sonar-argocd-helm-k8s/spring-boot-app-manifestss/values.yaml
-          """
-        }
-      }
-    }
-    stage('Push Helm Chart Changes to Git') {
-        environment {
-            GIT_REPO_NAME = "Jenkins-Zero-To-Hero"
-            GIT_USER_NAME = "krishnasai111"
-        }
-        steps {
-            withCredentials([string(credentialsId: 'github', variable: 'GITHUB_TOKEN')]) {
-                sh '''
-                    git config user.email "krishnasai.majji111@gmail.com"
-                    git config user.name "krishnasai111"
-                    
-                    git add java-maven-sonar-argocd-helm-k8s/spring-boot-app-manifestss/values.yaml
-                    git commit -m "Update Helm chart with image tag ${BUILD_NUMBER}"
-                    git push https://${GITHUB_TOKEN}@github.com/${GIT_USER_NAME}/${GIT_REPO_NAME} HEAD:main
-                '''
+    stages {
+        stage('Checkout') {
+            steps {
+                sh 'echo "Checkout stage passed"'
             }
         }
-}
-    stage('ArgoCD Deployment Sync') {
-      steps {
-        script {
-          // Trigger Argo CD to sync the application
-          sh 'kubectl apply -f spring-boot-app/argo-applications/spring-boot-app.yaml'  // Path to your Argo CD Application manifest
-          sh 'argocd app sync spring-boot-app' // Sync Argo CD application
+        stage('Build and Test') {
+            steps {
+                sh 'ls -ltr'
+                sh 'cd java-maven-sonar-argocd-helm-k8s/spring-boot-app && mvn clean package'
+            }
         }
-      }
-    }
-  }
-  post {
-    always {
-      cleanWs()
-    }
-  }
-}
+        stage('Static Code Analysis') {
+            environment {
+                SONAR_URL = "http://44.204.41.35:9000/"
+            }
+            steps {
+                withCredentials([string(credentialsId: 'sonarqube', variable: 'SONAR_AUTH_TOKEN')]) {
+                    sh 'cd java-maven-sonar-argocd-helm-k8s/spring-boot-app && mvn sonar:sonar -Dsonar.login=$SONAR_AUTH_TOKEN -Dsonar.host.url=${SONAR_URL}'
+                }
+            }
+        }
+        stage('Check Docker Installation') {
+            steps {
+                script {
+                    sh 'docker --version'
+                }
+            }
+        }
+        stage('Install Unzip') {
+            steps {
+                script {
+                    sh '''
+                        if ! [ -x "$(command -v unzip)" ]; then
+                            echo "Installing unzip..."
+                            apt-get update
+                            apt-get install -y unzip
+                        fi
+                    '''
+                }
+            }
+        }
+        stage('AWS CLI Installation') {
+            steps {
+                script {
+                    sh 'curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_6
