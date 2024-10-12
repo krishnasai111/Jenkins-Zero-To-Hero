@@ -156,7 +156,7 @@ pipeline {
     # Download and install Argo CD CLI
                     curl -sSL https://github.com/argoproj/argo-cd/releases/latest/download/argocd-linux-amd64 -o argocd
                     chmod +x argocd
-                    sudo mv argocd /usr/local/bin/
+                    mv argocd /usr/local/bin/
 
     # Sync Argo CD application
                     argocd app sync spring-boot-app
