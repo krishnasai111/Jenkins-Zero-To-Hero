@@ -87,8 +87,8 @@ pipeline {
         script {
           // Update Helm chart values with the new Docker image tag
           sh """
-          sed -i 's|repository:.*|repository: 440588537421.dkr.ecr.us-east-1.amazonaws.com/cicd|' helm-chart/spring-boot-app-manifestss/values.yaml
-          sed -i 's|tag:.*|tag: ${BUILD_NUMBER}|' helm-chart/spring-boot-app-manifestss/values.yaml
+          sed -i 's|repository:.*|repository: 440588537421.dkr.ecr.us-east-1.amazonaws.com/cicd|' spring-boot-app-manifestss/values.yaml
+          sed -i 's|tag:.*|tag: ${BUILD_NUMBER}|' spring-boot-app-manifestss/values.yaml
           """
         }
       }
