@@ -1,0 +1,10 @@
+image:
+  repository: 440588537421.dkr.ecr.us-east-1.amazonaws.com/cicd 
+  tag: "latest"
+
+env:
+  profile: "prod"
+
+service:
+  type: LoadBalancer
+  port: 80
