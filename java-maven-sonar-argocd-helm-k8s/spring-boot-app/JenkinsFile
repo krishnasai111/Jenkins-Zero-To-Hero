@@ -148,8 +148,7 @@ pipeline {
                      # Install Argo CD
                     kubectl apply -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml
 
-    # Create namespace for Argo CD
-                    kubectl create namespace argocd
+
 
     # Apply your Argo CD application manifest
                     kubectl apply -f java-maven-sonar-argocd-helm-k8s/argo-applications/spring-boot-app.yaml
