@@ -17,6 +17,19 @@ pipeline {
                 sh 'cd java-maven-sonar-argocd-helm-k8s/spring-boot-app && mvn clean package'
             }
         }
+        stage('Install Unzip') {
+            steps {
+                script {
+                    sh '''
+                        if ! [ -x "$(command -v unzip)" ]; then
+                            echo "Installing unzip..."
+                            apt-get update
+                            apt-get install -y unzip
+                        fi
+                    '''
+                }
+            }
+        }
         stage('AWS CLI Installation') {
             steps {
                 script {
@@ -60,19 +73,7 @@ pipeline {
                 }
             }
         }
-        stage('Install Unzip') {
-            steps {
-                script {
-                    sh '''
-                        if ! [ -x "$(command -v unzip)" ]; then
-                            echo "Installing unzip..."
-                            apt-get update
-                            apt-get install -y unzip
-                        fi
-                    '''
-                }
-            }
-        }
+
 
 
         stage('Build and Push Docker Image') {
