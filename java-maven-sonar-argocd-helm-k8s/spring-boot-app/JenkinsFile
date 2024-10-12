@@ -102,7 +102,7 @@ pipeline {
           git config --global user.name "krishnasai111"
           git add java-maven-sonar-argocd-helm-k8s/spring-boot-app-manifestss/values.yaml
           git commit -m "Update Helm chart with image tag ${BUILD_NUMBER}"
-          git push origin main
+          git push main
           """
         }
       }
