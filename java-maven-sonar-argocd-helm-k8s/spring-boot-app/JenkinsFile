@@ -96,8 +96,10 @@ pipeline {
     stage('Push Helm Chart Changes to Git') {
       steps {
         script {
+          sh 'git checkout main'
           // Commit and push Helm chart changes to the Git repository
           sh """
+          
           git config --global user.email "krishnasai.majji111@gmail.com"
           git config --global user.name "krishnasai111"
           git add java-maven-sonar-argocd-helm-k8s/spring-boot-app-manifestss/values.yaml
