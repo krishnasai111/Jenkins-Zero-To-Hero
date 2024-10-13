@@ -13,7 +13,7 @@ spec:
       valueFiles:
         - values.yaml
   destination:
-    server: '44.204.41.35:6443'  # Replace with your EC2 IP
+    server: '35.170.243.139:6443'  # Replace with your EC2 IP
     namespace: default
   syncPolicy:
     automated:
