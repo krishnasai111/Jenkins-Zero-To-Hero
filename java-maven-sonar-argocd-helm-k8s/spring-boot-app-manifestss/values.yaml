@@ -1,10 +1,19 @@
+# Image configuration
 image:
   repository: 440588537421.dkr.ecr.us-east-1.amazonaws.com/cicd
   tag: 64
 
+# Environment variables
 env:
   profile: "prod"
 
+# Service configuration
 service:
   type: LoadBalancer
   port: 80
+
+# ServiceAccount configuration
+serviceAccount:
+  create: true                     # Set to true to create a ServiceAccount
+  automount: true                  # Automatically mount the service account token
+  annotations: {}                  # Specify any annotations if required
